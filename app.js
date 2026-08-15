@@ -9,6 +9,11 @@ const ACTIVITIES = [
   { id: "gym", label: "Gym", color: "#3B82F6" },
   { id: "swimming", label: "Swimming", color: "#06B6D4" },
   { id: "run", label: "Run", color: "#22C55E" },
+  { id: "yoga", label: "Yoga", color: "#A855F7" },
+  { id: "cycling", label: "Cycling", color: "#F97316" },
+  { id: "walking", label: "Walking", color: "#EAB308" },
+  { id: "hiking", label: "Hiking", color: "#A16207" },
+  { id: "crossfit", label: "Crossfit", color: "#EF4444" },
 ];
 
 const STORAGE_KEY = "workout-tracker-v1";
@@ -155,7 +160,26 @@ function calculateStreak() {
 
   return streak;
 }
+function getStreakDates() {
+  const today = new Date();
+  const hasToday = workouts[toDateKey(today.getFullYear(), today.getMonth(), today.getDate())]?.length > 0;
 
+  const cursor = new Date(today);
+  if (!hasToday) {
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  const dates = [];
+  while (true) {
+    const key = toDateKey(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
+    const logged = workouts[key]?.length > 0;
+    if (!logged) break;
+    dates.push(key);
+    cursor.setDate(cursor.getDate() - 1);
+  }
+
+  return dates;
+}
 
 function updateStats(year, month) {
   let count = 0;
@@ -189,6 +213,7 @@ function updateStats(year, month) {
 
 
 function renderCalendar(year, month) {
+  console.log(year, month);
   const container = document.getElementById("calendar");
   const today = new Date();
   const firstDay = new Date(year, month, 1);
@@ -215,6 +240,8 @@ function renderCalendar(year, month) {
   for (let day = 1; day <= daysInMonth; day++) {
     const dateKey = toDateKey(year, month, day);
     const loggedActivities = workouts[dateKey] || [];
+    const isStreakDay = getStreakDates().includes(dateKey);
+    console.log(dateKey, loggedActivities);
     const isToday =
       day === today.getDate() &&
       month === today.getMonth() &&
@@ -229,7 +256,7 @@ function renderCalendar(year, month) {
     html += `
       <button
         type="button"
-        class="day${isToday ? " today" : ""}${loggedActivities.length ? " has-workout" : ""}"
+        class="day${isToday ? " today" : ""}${loggedActivities.length ? " has-workout" : ""}${isStreakDay ? " streak" : ""}"
         data-date="${dateKey}"
         aria-label="${day}${loggedActivities.length ? `, ${loggedActivities.length} activities logged` : ""}"
       >

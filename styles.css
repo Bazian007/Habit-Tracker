@@ -1,5 +1,5 @@
 :root {
-    --accent: #2563eb;
+    --accent: #3b08b4;
   }
   
   * {
@@ -111,7 +111,10 @@
     color: white;
     font-weight: 600;
   }
-  
+  .day.streak {
+    box-shadow: 0 0 0 2px var(--accent) inset;
+  }
+
   
   .day-number {
     line-height: 1;
