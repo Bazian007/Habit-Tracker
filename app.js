@@ -160,6 +160,34 @@ function calculateStreak() {
 
   return streak;
 }
+function calculateBestStreak() {
+  const dates = Object.keys(workouts).sort();
+  let currentStreak = 0;
+  let bestStreak = 0;
+  let previousDate = null;
+  for (const date of dates) {
+    const currentDate = new Date(`${date}T00:00:00`);
+    if (previousDate === null) {
+      currentStreak = 1;
+    } else {
+      const dayBefore = new Date(currentDate);
+      dayBefore.setDate(dayBefore.getDate() - 1);
+      if (previousDate.toDateString() === dayBefore.toDateString()) {
+        currentStreak++;
+      } else {
+        currentStreak = 1;
+      }
+      
+    }
+    if (currentStreak > bestStreak) {
+      bestStreak = currentStreak;
+    }
+
+    previousDate = currentDate;
+  }
+  return bestStreak;
+  
+}
 function getStreakDates() {
   const today = new Date();
   const hasToday = workouts[toDateKey(today.getFullYear(), today.getMonth(), today.getDate())]?.length > 0;
@@ -204,10 +232,13 @@ function updateStats(year, month) {
   }
 
   const streak = calculateStreak();
+  const bestStreak = calculateBestStreak();
   if (streak > 0) {
     text += ` 🔥 ${streak}-day streak`;
   }
-
+  if (bestStreak > 0) {
+    text += ` · Best: ${bestStreak} days`;
+  }
   document.getElementById("stats").textContent = text;
 }
 
