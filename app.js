@@ -17,6 +17,7 @@ const ACTIVITIES = [
 ];
 
 const STORAGE_KEY = "workout-tracker-v1";
+const THEME_STORAGE_KEY = "habit-tracker-theme";
 
 const now = new Date();
 let viewYear = now.getFullYear();
@@ -313,4 +314,19 @@ document.getElementById("modal-backdrop").addEventListener("click", closeModal);
 document.getElementById("close-modal").addEventListener("click", closeModal);
 document.getElementById("clear-workout").addEventListener("click", clearWorkout);
 
+if (localStorage.getItem(THEME_STORAGE_KEY) === "dark") {
+  document.body.classList.add("dark");
+  document.getElementById("theme-toggle").textContent = "Light mode";
+}
+
+document.getElementById("theme-toggle").addEventListener("click", () => {
+  const isDark = document.body.classList.toggle("dark");
+  localStorage.setItem(THEME_STORAGE_KEY, isDark ? "dark" : "light");
+
+  if (isDark) {
+    document.getElementById("theme-toggle").textContent = "Light mode";
+  } else {
+    document.getElementById("theme-toggle").textContent = "Dark mode";
+  }
+});
 renderCalendar(viewYear, viewMonth);
