@@ -22,13 +22,37 @@
     background: #111827;
   }
 
+  body.dark .activity-breakdown {
+    background: #111827;
+  }
+
   .app {
-    max-width: 480px;
+    max-width: 960px;
     margin: 0 auto;
     padding: 3rem 1.5rem;
   }
   
+  .dashboard {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1rem;
+    align-items: start;
+  }
   
+  .dashboard .activity-breakdown {
+    margin-top: 0;
+  }
+  
+  @media (max-width: 700px) {
+    .dashboard {
+      grid-template-columns: 1fr;
+    }
+  
+    .dashboard .activity-breakdown {
+      margin-top: 1rem;
+    }
+  }
+
   header h1 {
     margin: 0 0 0.25rem;
     font-size: 1.5rem;
@@ -90,6 +114,50 @@
     box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
   }
   
+  .activity-breakdown {
+    margin-top: 1rem;
+    background: white;
+    border-radius: 12px;
+    padding: 1.25rem;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+  }
+
+.activity-breakdown h2 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+#activity-breakdown {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.activity-summary {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #1f2937;
+}
+
+.activity-summary-swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.activity-summary-count {
+  margin-left: auto;
+}
+
+body.dark .activity-summary {
+  background: #1e293b;
+  color: #f8fafc;
+}
+
   .calendar-header {
     display: flex;
     align-items: center;

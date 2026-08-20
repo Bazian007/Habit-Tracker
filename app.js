@@ -243,6 +243,34 @@ function updateStats(year, month) {
   document.getElementById("stats").textContent = text;
 }
 
+function updateActivityBreakdown(year, month) {
+  const counts = {};
+
+  for (const dateKey in workouts) {
+    const [workoutYear, workoutMonth] = dateKey.split("-").map(Number);
+    if (workoutYear === year && workoutMonth === month + 1) {
+      for (const activityId of workouts[dateKey]) {
+        counts[activityId] = (counts[activityId] || 0) + 1;
+      }
+    }
+  }
+
+  const loggedActivities = ACTIVITIES.filter((activity) => counts[activity.id]);
+  const container = document.getElementById("activity-breakdown");
+
+  if (loggedActivities.length === 0) {
+    container.textContent = "No activities logged this month.";
+    return;
+  }
+
+  container.innerHTML = loggedActivities.map((activity) => `
+    <div class="activity-summary">
+      <span class="activity-summary-swatch" style="background: ${activity.color}"></span>
+      <span>${activity.label}</span>
+      <strong class="activity-summary-count">${counts[activity.id]}</strong>
+    </div>
+  `).join("");
+}
 
 function renderCalendar(year, month) {
   console.log(year, month);
@@ -252,7 +280,7 @@ function renderCalendar(year, month) {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const startOffset = (firstDay.getDay() + 6) % 7;
     updateStats(year, month);
-
+    updateActivityBreakdown(year, month);
   let html = `
     <div class="calendar-header">
       <button type="button" class="nav-btn" id="prev-month" aria-label="Previous month">‹</button>
