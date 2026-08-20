@@ -10,7 +10,8 @@
   <main class="app">
     <header>
       <h1>Habit Tracker</h1>
-      <p class="subtitle">Log gym, swimming, and more.</p>
+      <p class="subtitle">Build healthy habits, one day at a time.</p>
+      <p class="quote">“Don’t count the days. Make the days count.” Muhammad Ali</p>
       <button type="button" id="theme-toggle">Dark mode</button>
     </header>
     <div id="stats" class="stats"></div>
@@ -25,13 +26,18 @@
       </section>
     </div>
 
+    <section class="recent-activity">
+      <h2>Recent activity</h2>
+      <div id="recent-activity"></div>
+    </section>
+
       <div id="modal" class="modal hidden" aria-hidden="true">
         <div class="modal-backdrop" id="modal-backdrop"></div>
         <div class="modal-panel" role="dialog" aria-labelledby="modal-title">
-          <h3 id="modal-title">Log workout</h3>
+          <h3 id="modal-title">Log activities</h3>
           <p id="modal-date" class="modal-date"></p>
           <div id="activity-options" class="activity-options"></div>
-          <button type="button" id="clear-workout" class="clear-btn hidden">Remove workout</button>
+          <button type="button" id="clear-workout" class="clear-btn hidden">Remove activities</button>
           <button type="button" id="close-modal" class="close-btn">Cancel</button>
         </div>
       </div>

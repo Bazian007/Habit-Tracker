@@ -221,15 +221,15 @@ function updateStats(year, month) {
   }
 
   let text = count === 0
-    ? "No workouts yet — tap a day to log one."
-    : `${count} workouts this month`;
+    ? "No activities yet. Tap a day to log one."
+    : `${count} activities this month`;
 
   const today = new Date();
   const todayKey = toDateKey(today.getFullYear(), today.getMonth(), today.getDate());
   const loggedToday = workouts[todayKey] && workouts[todayKey].length > 0;
 
   if (!loggedToday) {
-    text += " Let's go — log today's workout! 💪";
+    text += " Let's go! Log today's activities! 💪";
   }
 
   const streak = calculateStreak();
@@ -272,6 +272,34 @@ function updateActivityBreakdown(year, month) {
   `).join("");
 }
 
+function updateRecentActivity() {
+  const container = document.getElementById("recent-activity");
+  const recentDates = Object.keys(workouts)
+    .filter((dateKey) => workouts[dateKey]?.length > 0)
+    .sort((firstDate, secondDate) => secondDate.localeCompare(firstDate))
+    .slice(0, 5);
+
+  if (recentDates.length === 0) {
+    container.textContent = "No activities logged yet.";
+    return;
+  }
+
+  container.innerHTML = recentDates.map((dateKey) => {
+    const labels = workouts[dateKey]
+      .map(getActivity)
+      .filter(Boolean)
+      .map((activity) => activity.label)
+      .join(", ");
+
+    return `
+      <div class="recent-activity-item">
+        <time class="recent-activity-date" datetime="${dateKey}">${formatDisplayDate(dateKey)}</time>
+        <span class="recent-activity-labels">${labels}</span>
+      </div>
+    `;
+  }).join("");
+}
+
 function renderCalendar(year, month) {
   console.log(year, month);
   const container = document.getElementById("calendar");
@@ -281,6 +309,7 @@ function renderCalendar(year, month) {
   const startOffset = (firstDay.getDay() + 6) % 7;
     updateStats(year, month);
     updateActivityBreakdown(year, month);
+    updateRecentActivity();
   let html = `
     <div class="calendar-header">
       <button type="button" class="nav-btn" id="prev-month" aria-label="Previous month">‹</button>

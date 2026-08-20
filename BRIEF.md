@@ -1,76 +1,68 @@
 # How to work with me
 
-I am a beginner. I am building this app to learn, so I type all code myself.
+I am a beginner building this app to learn. Keep explanations short, use plain
+language, and teach one small thing at a time.
 
-**Before we start:** read `app.js` and `styles.css`. Use my real variable names.
-Do not assume — my code has changed since it was written.
+**Before starting:** read `app.js` and `styles.css`. Use my real variable names;
+do not assume the code is unchanged.
 
-## Rules
+## Editing permission
 
-- Never create, edit or delete a file. Show me code, I type it.
-- Never ask me to guess. Tell me the answer.
-- Never end a message with a question unless I asked you one.
-- Explain the point of a step **before** giving me the code, in one sentence.
-- Define any new word the first time you use it.
-- No analogies. Plain statements and short code examples only.
-- Short answers. One step at a time. Wait for me to say "next".
-- If I say I don't understand, use a smaller example — don't repeat yourself.
+- By default, an AI agent must not create, edit, or delete any file.
+- The agent may edit files only when I specifically ask it to and clearly give
+  permission for that task.
+- Permission for one task does not give permission for unrelated edits or any
+  deletion.
+- When I ask to type code myself, show the code and exact location; do not make
+  the edit.
 
-## Feature 1 — My own colour scheme — Done
+## Teaching rules
 
-**What it adds:** the app stops looking like a default template.
+- Explain the point of a step before showing code, in one sentence.
+- Define new programming words the first time they appear.
+- Do not ask me to guess. Give the answer.
+- No analogies. Use plain statements and small code examples.
+- If I say I do not understand, use a smaller example instead of repeating the
+  same explanation.
+- Do not give quizzes unless I ask for one.
 
-**What I learn:** hex codes, CSS variables, why changing one line changes many
-things on screen.
+## Current app
 
-`--accent` in `styles.css` is set to my own colour.
+Habit Tracker is a browser-only app. It has no server, database, or login.
 
-## Feature 2 — Monthly stats — Done
+- `index.html` provides the page structure: header, stats, calendar,
+  activity breakdown, recent activity, and the activity picker modal.
+- `styles.css` provides the light/dark design and responsive dashboard layout.
+- `app.js` provides calendar behaviour and saves data in browser `localStorage`.
+- Saved data uses `workout-tracker-v1`: `{ "YYYY-MM-DD": [activityId, ...] }`.
+- The theme preference uses `habit-tracker-theme`.
 
-**What it adds:** a line above the calendar showing how many workouts I did this
-month, and how many of each type.
+## Built features
 
-**What I learn:** arrays, objects, `for` loops, counting with a variable. This is
-the biggest jump — take it slowly and split it across several steps.
+- Custom colour scheme and Habit Tracker wording.
+- Eight activities: Gym, Swimming, Run, Yoga, Cycling, Walking, Hiking, and
+  Crossfit.
+- Calendar navigation and activity selection/removal for each day.
+- Browser storage persistence.
+- Monthly activity total, current streak, and best streak.
+- Current-streak rings on calendar days.
+- Dark mode toggle that remains selected after refresh.
+- Responsive dashboard: calendar and monthly Activity Breakdown are side by side
+  on wide screens and stacked on narrow screens.
+- Activity Breakdown with coloured activity rows and counts for the viewed month.
+- Recent Activity list showing the five latest logged dates.
 
-`updateStats()` in `app.js` counts workouts for the viewed month and writes the
-line into `#stats`.
+## Possible next features
 
-## Feature 3 — Current streak — Done
+- Add a weekly goal and progress indicator.
+- Add notes to a logged day.
+- Allow custom activities.
+- Export or import saved history.
+- Add a backend only if multi-device sync becomes a real goal.
 
-**What it adds:** "4 days in a row" — the thing that makes a habit tracker
-motivating.
+## After a completed feature
 
-**What I learn:** `if` / `else`, working backwards through dates, stopping a loop
-early.
-
-`calculateStreak()` in `app.js` builds this, appended onto the stats line.
-
-## Feature 4 — More activities + streak highlighting — Done
-
-**What it adds:** 5 more activities (Yoga, Cycling, Walking, Hiking, Crossfit —
-8 total), and the calendar squares that are part of my current streak get a
-coloured ring around them.
-
-**What I learn:** adding items to an array one at a time, function scope (a
-function defined inside another function isn't usable outside it), and reusing
-a backwards-date-walk loop to build a list instead of a count.
-
-Picker stays a vertical list — tried a horizontal scrolling row, didn't like it.
-
-## Considered, not started
-
-- Best streak ever (track longest streak separately from current)
-- Dark mode toggle (reuse the `--accent` idea from Feature 1)
-
-## After each feature
-
-I do these myself:
-
-1. `Cmd+S`
-2. `Cmd+Option+R` in Safari
-3. Check console for red errors
-4. `git add .` → `git commit -m "..."` → `git push`
-
-Then ask me to explain what I built in my own words. If I can't, we go back
-rather than forward.
+1. Save with `Cmd+Option+S`.
+2. Refresh Safari with `Cmd+Option+R`.
+3. Check Safari's console for red errors.
+4. `git add .` → `git commit -m "..."` → `git push`.

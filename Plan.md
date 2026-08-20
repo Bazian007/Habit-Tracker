@@ -1,50 +1,63 @@
-# Workout Tracker — Plan & Status
+# Habit Tracker — Plan & Status
 
 ## Goal
-The point of this project is to LEARN, not just to ship an app.
-Claude gives instructions/code; I type and run everything myself.
 
-## How Claude should work with me
-- Never create, edit, or delete files without asking first.
-- Give simple step-by-step instructions and show code as text — I type it in.
-- Only touch a file directly if I explicitly hand it over and ask.
+Learn front-end coding by building a useful Habit Tracker. The app runs locally
+in a browser and currently has no backend.
 
-## Roadmap (condensed)
-- Phase 0: Local web app (HTML/CSS/JS, no backend) — chosen
-- Phase 1: Data model — resolved. `workouts` is `{ "YYYY-MM-DD": [activityId, ...] }`,
-  supports multiple workouts per day.
-- Phase 2: UI — calendar + tap-day modal — done
-- Phase 3: MVP build
-  - [x] Step 1: project setup (index.html, app.js, styles.css)
-  - [x] Step 2: localStorage persistence
-  - [x] Step 3: build-your-own calendar grid
-  - [x] Step 4: log/edit/delete a workout
-  - [x] Step 5: stats bar ("N workouts this month" + current streak)
-- Phase 3.5: Post-MVP features (see `BRIEF.md`)
-  - [x] Custom colour scheme (`--accent` in `styles.css`)
-  - [x] Monthly stats line
-  - [x] Current streak count
-  - [x] Activity list expanded from 3 to 8: Gym, Swimming, Run, Yoga,
-    Cycling, Walking, Hiking, Crossfit
-  - [x] Streak-day highlighting on the calendar (`getStreakDates()` +
-    `.day.streak` CSS ring)
-- Phase 4: Polish (mobile layout, PWA, dark mode, export/import) — not started
-- Phase 5: Optional backend for multi-device sync — not started
+## Working agreement
 
-## Known small cleanups (not urgent)
-- `getStreakDates()` is called once per day inside the `renderCalendar()`
-  loop (~28-31 calls per render) instead of once — correct but wasteful.
-- `.stats` text colour in `styles.css` is hardcoded `#04823b` instead of
-  using `var(--accent)`.
+- The default is teaching mode: short explanations and one small step at a time.
+- An AI agent must not edit or delete files unless the user explicitly asks and
+  grants permission for the specific task.
+- A granted permission is limited to that requested task; it does not permit
+  unrelated changes.
 
-## Considered, not started
-- Best streak ever (track longest streak separately from current)
-- Dark mode toggle (reuse the `--accent`/CSS variable approach)
+## Current data model
+
+`workouts` is stored in browser `localStorage` as:
+
+```js
+{
+  "2026-08-20": ["gym", "walking"]
+}
+```
+
+Each date can have multiple activity IDs. The internal name remains `workouts`,
+while the visible interface calls them activities.
+
+## Completed
+
+- [x] Static HTML/CSS/JavaScript app structure.
+- [x] Calendar grid with previous/next month navigation.
+- [x] Activity picker modal, add/remove behaviour, and browser persistence.
+- [x] Eight predefined activities with colour dots.
+- [x] Monthly total, current streak, best streak, and streak highlighting.
+- [x] Persistent Dark mode.
+- [x] Habit Tracker header, subtitle, and quote.
+- [x] Responsive dashboard layout.
+- [x] Monthly Activity Breakdown with colour-coded count rows.
+- [x] Recent Activity list showing the five most recent logged dates.
+
+## Next options
+
+1. Weekly goal and progress indicator.
+2. Notes for a logged day.
+3. Custom activities.
+4. Export/import of browser data.
+5. Optional backend for multi-device sync.
+
+## Known small cleanups
+
+- `getStreakDates()` is recalculated for every calendar day during rendering.
+  It works, but could be calculated once per render.
+- `console.log()` calls in `renderCalendar()` are useful for learning/debugging
+  but can be removed later.
 
 ## Log
-- 2026-08-14: Created this file. Reviewed original plan against current
-  code. Established working agreement above.
-- 2026-08-15: Synced this file with actual app state — stats/streak/colour
-  features were already built, activity list expanded to 8, streak-day
-  calendar highlighting added. Removed the old open decision (data model
-  question was already resolved in code).
+
+- 2026-08-14: Project plan created.
+- 2026-08-15: Original calendar, activities, stats, and streak work documented.
+- 2026-08-19: Best streak and persistent Dark mode completed.
+- 2026-08-20: Activity Breakdown, responsive dashboard, Recent Activity, Habit
+  Tracker wording, and the working agreement were documented.
