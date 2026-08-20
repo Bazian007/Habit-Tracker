@@ -36,21 +36,27 @@ Habit Tracker is a browser-only app. It has no server, database, or login.
 - `app.js` provides calendar behaviour and saves data in browser `localStorage`.
 - Saved data uses `workout-tracker-v1`: `{ "YYYY-MM-DD": [activityId, ...] }`.
 - The theme preference uses `habit-tracker-theme`.
+- A Content Security Policy (CSP) meta tag in `index.html` restricts scripts and
+  other resources to this app. Inline styles remain allowed for dynamic item
+  colours created by `app.js`.
 
 ## Built features
 
 - Custom colour scheme and Habit Tracker wording.
 - Eight activities: Gym, Swimming, Run, Yoga, Cycling, Walking, Hiking, and
-  Crossfit.
+  Crossfit; plus six habits: Read, Meditate, Drink water, Take a short break,
+  Learn something new, and Write 3 gratitudes.
 - Calendar navigation and activity selection/removal for each day.
+- A category picker: choose Activities or Habits before choosing an item to log.
+- A centred, scrollable picker modal that works on shorter screens.
 - Browser storage persistence.
 - Monthly activity total, current streak, and best streak.
 - Current-streak rings on calendar days.
 - Dark mode toggle that remains selected after refresh.
-- Responsive dashboard: calendar and monthly Activity Breakdown are side by side
+- Responsive dashboard: calendar and monthly breakdown are side by side
   on wide screens and stacked on narrow screens.
-- Activity Breakdown with coloured activity rows and counts for the viewed month.
-- Recent Activity list showing the five latest logged dates.
+- Monthly Breakdown with coloured item rows and counts for the viewed month.
+- Recent Logs list showing the five latest logged dates.
 
 ## Possible next features
 

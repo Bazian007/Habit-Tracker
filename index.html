@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; object-src 'none'; base-uri 'self'">
+
   <title>Habit Tracker</title>
   <link rel="stylesheet" href="styles.css">
 </head>
@@ -21,23 +23,28 @@
       </section>
     
       <section class="activity-breakdown">
-        <h2>Activity breakdown</h2>
+        <h2>Monthly breakdown</h2>
         <div id="activity-breakdown"></div>
       </section>
     </div>
 
     <section class="recent-activity">
-      <h2>Recent activity</h2>
+      <h2>Recent logs</h2>
       <div id="recent-activity"></div>
     </section>
 
       <div id="modal" class="modal hidden" aria-hidden="true">
         <div class="modal-backdrop" id="modal-backdrop"></div>
         <div class="modal-panel" role="dialog" aria-labelledby="modal-title">
-          <h3 id="modal-title">Log activities</h3>
+          <h3 id="modal-title">Log your day</h3>
           <p id="modal-date" class="modal-date"></p>
+          <div class="category-tabs" role="group" aria-label="Choose what to log">
+            <button type="button" class="category-tab" data-category="activity" aria-pressed="false">Activities</button>
+            <button type="button" class="category-tab" data-category="habit" aria-pressed="false">Habits</button>
+          </div>
+          <p id="category-prompt" class="category-prompt">Choose Activities or Habits to see the list.</p>
           <div id="activity-options" class="activity-options"></div>
-          <button type="button" id="clear-workout" class="clear-btn hidden">Remove activities</button>
+          <button type="button" id="clear-workout" class="clear-btn hidden">Clear day</button>
           <button type="button" id="close-modal" class="close-btn">Cancel</button>
         </div>
       </div>

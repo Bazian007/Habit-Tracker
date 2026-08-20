@@ -360,8 +360,9 @@ body.dark .recent-activity-labels {
     inset: 0;
     z-index: 100;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
+    padding: 1rem;
   }
   
   .modal-backdrop {
@@ -375,7 +376,9 @@ body.dark .recent-activity-labels {
     background: white;
     width: 100%;
     max-width: 480px;
-    border-radius: 16px 16px 0 0;
+    max-height: calc(100vh - 2rem);
+    overflow-y: auto;
+    border-radius: 16px;
     padding: 1.25rem;
     z-index: 1;
   }
@@ -386,6 +389,36 @@ body.dark .recent-activity-labels {
   
   .modal-date {
     margin: 0 0 1rem;
+    color: #666;
+    font-size: 0.875rem;
+  }
+
+  .category-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .category-tab {
+    padding: 0.65rem;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    color: var(--ink);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+
+  .category-tab.selected {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: white;
+  }
+
+  .category-prompt {
+    margin: 0 0 0.75rem;
     color: #666;
     font-size: 0.875rem;
   }
@@ -420,6 +453,36 @@ body.dark .recent-activity-labels {
     border-color: var(--activity-color);
     background: color-mix(in srgb, var(--activity-color) 12%, white);
   }
+
+  body.dark .modal-panel {
+    background: #111827;
+  }
+
+  body.dark .modal-date,
+  body.dark .category-prompt {
+    color: #cbd5e1;
+  }
+
+  body.dark .category-tab,
+  body.dark .activity-btn,
+  body.dark .close-btn {
+    background: #1e293b;
+    border-color: #475569;
+    color: #f8fafc;
+  }
+
+  body.dark .category-tab.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  body.dark .activity-btn:hover {
+    background: #273449;
+  }
+
+  body.dark .activity-btn.selected {
+    background: color-mix(in srgb, var(--activity-color) 22%, #111827);
+  }
   
   .activity-swatch {
     width: 14px;
@@ -428,7 +491,7 @@ body.dark .recent-activity-labels {
     background: var(--activity-color);
     flex-shrink: 0;
   }
-  
+
   .clear-btn,
   .close-btn {
     width: 100%;

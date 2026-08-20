@@ -24,20 +24,28 @@ in a browser and currently has no backend.
 ```
 
 Each date can have multiple activity IDs. The internal name remains `workouts`,
-while the visible interface calls them activities.
+while the visible interface calls them activities or habits.
+
+## Security
+
+`index.html` has a Content Security Policy (CSP) meta tag. It restricts scripts
+and resources to this app; inline styles are allowed because item colours are
+created dynamically in `app.js`.
 
 ## Completed
 
 - [x] Static HTML/CSS/JavaScript app structure.
 - [x] Calendar grid with previous/next month navigation.
 - [x] Activity picker modal, add/remove behaviour, and browser persistence.
-- [x] Eight predefined activities with colour dots.
+- [x] Eight predefined activities and six predefined habits with colour dots.
+- [x] Activities/Habits category picker in the logging modal.
+- [x] Centred, scrollable logging modal.
 - [x] Monthly total, current streak, best streak, and streak highlighting.
 - [x] Persistent Dark mode.
 - [x] Habit Tracker header, subtitle, and quote.
 - [x] Responsive dashboard layout.
-- [x] Monthly Activity Breakdown with colour-coded count rows.
-- [x] Recent Activity list showing the five most recent logged dates.
+- [x] Monthly Breakdown with colour-coded count rows.
+- [x] Recent Logs list showing the five most recent logged dates.
 
 ## Next options
 
@@ -61,3 +69,5 @@ while the visible interface calls them activities.
 - 2026-08-19: Best streak and persistent Dark mode completed.
 - 2026-08-20: Activity Breakdown, responsive dashboard, Recent Activity, Habit
   Tracker wording, and the working agreement were documented.
+- 2026-08-20: Added a CSP meta tag, Activities/Habits category picker, six
+  starter habits, and a centred logging modal.

@@ -6,14 +6,20 @@ const MONTH_NAMES = [
 ];
 
 const ACTIVITIES = [
-  { id: "gym", label: "Gym", color: "#3B82F6" },
-  { id: "swimming", label: "Swimming", color: "#06B6D4" },
-  { id: "run", label: "Run", color: "#22C55E" },
-  { id: "yoga", label: "Yoga", color: "#A855F7" },
-  { id: "cycling", label: "Cycling", color: "#F97316" },
-  { id: "walking", label: "Walking", color: "#EAB308" },
-  { id: "hiking", label: "Hiking", color: "#A16207" },
-  { id: "crossfit", label: "Crossfit", color: "#EF4444" },
+  { id: "gym", label: "Gym", color: "#3B82F6", category: "activity" },
+  { id: "swimming", label: "Swimming", color: "#06B6D4", category: "activity" },
+  { id: "run", label: "Run", color: "#22C55E", category: "activity" },
+  { id: "yoga", label: "Yoga", color: "#A855F7", category: "activity" },
+  { id: "cycling", label: "Cycling", color: "#F97316", category: "activity" },
+  { id: "walking", label: "Walking", color: "#EAB308", category: "activity" },
+  { id: "hiking", label: "Hiking", color: "#A16207", category: "activity" },
+  { id: "crossfit", label: "Crossfit", color: "#EF4444", category: "activity" },
+  { id: "reading", label: "Read", color: "#8B5CF6", category: "habit" },
+  { id: "meditation", label: "Meditate", color: "#EC4899", category: "habit" },
+  { id: "water", label: "Drink water", color: "#0EA5E9", category: "habit" },
+  { id: "short-break", label: "Take a short break", color: "#F59E0B", category: "habit" },
+  { id: "learn", label: "Learn something new", color: "#14B8A6", category: "habit" },
+  { id: "gratitudes", label: "Write 3 gratitudes", color: "#D946EF", category: "habit" },
 ];
 
 const STORAGE_KEY = "workout-tracker-v1";
@@ -23,6 +29,7 @@ const now = new Date();
 let viewYear = now.getFullYear();
 let viewMonth = now.getMonth();
 let selectedDate = null;
+let selectedCategory = null;
 let workouts = loadWorkouts();
 
 function loadWorkouts() {
@@ -73,14 +80,37 @@ function changeMonth(delta) {
 
 function openModal(dateKey) {
   selectedDate = dateKey;
+  selectedCategory = null;
   const modal = document.getElementById("modal");
-  const clearBtn = document.getElementById("clear-workout");
-  const loggedActivities = workouts[dateKey] || [];
 
   document.getElementById("modal-date").textContent = formatDisplayDate(dateKey);
+  renderActivityOptions();
 
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
+}
+
+function renderActivityOptions() {
   const options = document.getElementById("activity-options");
-  options.innerHTML = ACTIVITIES.map((activity) => `
+  const prompt = document.getElementById("category-prompt");
+  const clearBtn = document.getElementById("clear-workout");
+  const loggedActivities = workouts[selectedDate] || [];
+
+  document.querySelectorAll(".category-tab").forEach((button) => {
+    const isSelected = button.dataset.category === selectedCategory;
+    button.classList.toggle("selected", isSelected);
+    button.setAttribute("aria-pressed", String(isSelected));
+  });
+
+  if (!selectedCategory) {
+    prompt.textContent = "Choose Activities or Habits to see the list.";
+    options.innerHTML = "";
+  } else {
+    const categoryName = selectedCategory === "activity" ? "activities" : "habits";
+    prompt.textContent = `Choose the ${categoryName} you completed.`;
+    options.innerHTML = ACTIVITIES
+      .filter((activity) => activity.category === selectedCategory)
+      .map((activity) => `
     <button
       type="button"
       class="activity-btn${loggedActivities.includes(activity.id) ? " selected" : ""}"
@@ -92,23 +122,22 @@ function openModal(dateKey) {
     </button>
   `).join("");
 
-  options.querySelectorAll(".activity-btn").forEach((btn) => {
-    btn.addEventListener("click", () => toggleActivity(btn.dataset.activity));
-  });
+    options.querySelectorAll(".activity-btn").forEach((btn) => {
+      btn.addEventListener("click", () => toggleActivity(btn.dataset.activity));
+    });
+  }
 
   if (loggedActivities.length > 0) {
     clearBtn.classList.remove("hidden");
   } else {
     clearBtn.classList.add("hidden");
   }
-
-  modal.classList.remove("hidden");
-  modal.setAttribute("aria-hidden", "false");
 }
 
 
 function closeModal() {
   selectedDate = null;
+  selectedCategory = null;
   const modal = document.getElementById("modal");
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
@@ -130,7 +159,7 @@ function toggleActivity(activityId) {
   }
 
   saveWorkouts(workouts);
-  openModal(selectedDate);
+  renderActivityOptions();
   renderCalendar(viewYear, viewMonth);
 }
 
@@ -259,7 +288,7 @@ function updateActivityBreakdown(year, month) {
   const container = document.getElementById("activity-breakdown");
 
   if (loggedActivities.length === 0) {
-    container.textContent = "No activities logged this month.";
+    container.textContent = "Nothing logged this month.";
     return;
   }
 
@@ -280,7 +309,7 @@ function updateRecentActivity() {
     .slice(0, 5);
 
   if (recentDates.length === 0) {
-    container.textContent = "No activities logged yet.";
+    container.textContent = "Nothing logged yet.";
     return;
   }
 
@@ -347,7 +376,7 @@ function renderCalendar(year, month) {
         type="button"
         class="day${isToday ? " today" : ""}${loggedActivities.length ? " has-workout" : ""}${isStreakDay ? " streak" : ""}"
         data-date="${dateKey}"
-        aria-label="${day}${loggedActivities.length ? `, ${loggedActivities.length} activities logged` : ""}"
+        aria-label="${day}${loggedActivities.length ? `, ${loggedActivities.length} items logged` : ""}"
       >
         <span class="day-number">${day}</span>
         <span class="workout-dots">${dots}</span>
@@ -370,6 +399,12 @@ function renderCalendar(year, month) {
 document.getElementById("modal-backdrop").addEventListener("click", closeModal);
 document.getElementById("close-modal").addEventListener("click", closeModal);
 document.getElementById("clear-workout").addEventListener("click", clearWorkout);
+document.querySelectorAll(".category-tab").forEach((button) => {
+  button.addEventListener("click", () => {
+    selectedCategory = button.dataset.category;
+    renderActivityOptions();
+  });
+});
 
 if (localStorage.getItem(THEME_STORAGE_KEY) === "dark") {
   document.body.classList.add("dark");
