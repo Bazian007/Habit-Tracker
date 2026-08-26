@@ -57,21 +57,25 @@ Habit Tracker is a browser-only app. It has no server, database, or login.
   on wide screens and stacked on narrow screens.
 - Monthly Breakdown with coloured item rows and counts for the viewed month.
 - Recent Logs list showing the five latest logged dates.
+- Manual backup controls: download logged history as a JSON file and restore it
+  later after a confirmation.
 
-## Next project — Installable web app (PWA)
+## Completed project — Installable web app (PWA)
 
-Turn Habit Tracker into a PWA: installable with its own icon and usable
-offline. Still a static site — no server, database, or login is added.
-Steps: publish with GitHub Pages, add a manifest and icons, test installing
-it, add a service worker for offline files, then test offline and after
-updates. Full step-by-step plan is in `Plan.md`.
+Habit Tracker is published with GitHub Pages and can be installed as a web app
+with its own icon. `manifest.webmanifest` describes the app, and
+`service-worker.js` saves the HTML, CSS, JavaScript, manifest, and icons for
+offline use. The cache name is increased when a new app version is published.
+
+The app remains static: it has no server, database, login, or automatic sync.
+Safari browser pages and Safari Dock web apps keep separate `localStorage`
+data. The manual JSON backup feature can transfer or restore a user's history.
 
 ## Possible next features
 
 - Add a weekly goal and progress indicator.
 - Add notes to a logged day.
 - Allow custom activities.
-- Export or import saved history.
 - Add a backend only if multi-device sync becomes a real goal.
 
 ## After a completed feature

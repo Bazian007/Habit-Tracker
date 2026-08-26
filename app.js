@@ -56,6 +56,23 @@ function exportWorkouts() {
   URL.revokeObjectURL(link.href);
 }
 
+function importWorkouts(file) {
+  const reader = new FileReader();
+
+  reader.addEventListener("load", () => {
+    const importedWorkouts = JSON.parse(reader.result);
+    if (!confirm("Replace your current logs with this backup?")) {
+      return;
+    }
+    
+    workouts = importedWorkouts;
+    saveWorkouts(workouts);
+    renderCalendar(viewYear, viewMonth);
+  });
+
+  reader.readAsText(file);
+}
+
 function toDateKey(year, month, day) {
   const m = String(month + 1).padStart(2, "0");
   const d = String(day).padStart(2, "0");
@@ -435,6 +452,17 @@ document.getElementById("theme-toggle").addEventListener("click", () => {
 });
 
 document.getElementById("export-data").addEventListener("click", exportWorkouts);
+document.getElementById("import-data").addEventListener("click", () => {
+  document.getElementById("import-file").click();
+});
+
+document.getElementById("import-file").addEventListener("change", (event) => {
+  const file = event.target.files[0];
+
+  if (file) {
+    importWorkouts(file);
+  }
+});
 
 renderCalendar(viewYear, viewMonth);
 if ("serviceWorker" in navigator) {
