@@ -102,6 +102,28 @@
     color: #f8fafc;
   }
 
+  .data-controls {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin: 0 0 1rem;
+  }
+  
+  .data-controls button {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #060607;
+    border-radius: 8px;
+    background: rgb(220, 216, 216);
+    font: inherit;
+    cursor: pointer;
+  }
+
+  body.dark .data-controls button {
+    background: #273449;
+    border-color: #475569;
+    color: #f8fafc;
+  }
+
   body.dark .stats {
     background: #1e293b;
   }

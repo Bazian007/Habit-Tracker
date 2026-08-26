@@ -44,6 +44,18 @@ function saveWorkouts(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 }
 
+function exportWorkouts() {
+  const backup = JSON.stringify(workouts);
+  const file = new Blob([backup], { type: "application/json" });
+  const link = document.createElement("a");
+
+  link.href = URL.createObjectURL(file);
+  link.download = "habit-tracker-backup.json";
+  link.click();
+
+  URL.revokeObjectURL(link.href);
+}
+
 function toDateKey(year, month, day) {
   const m = String(month + 1).padStart(2, "0");
   const d = String(day).padStart(2, "0");
@@ -421,6 +433,9 @@ document.getElementById("theme-toggle").addEventListener("click", () => {
     document.getElementById("theme-toggle").textContent = "Dark mode";
   }
 });
+
+document.getElementById("export-data").addEventListener("click", exportWorkouts);
+
 renderCalendar(viewYear, viewMonth);
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./service-worker.js");
