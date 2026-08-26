@@ -422,3 +422,6 @@ document.getElementById("theme-toggle").addEventListener("click", () => {
   }
 });
 renderCalendar(viewYear, viewMonth);
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("./service-worker.js");
+}
