@@ -58,6 +58,14 @@ Habit Tracker is a browser-only app. It has no server, database, or login.
 - Monthly Breakdown with coloured item rows and counts for the viewed month.
 - Recent Logs list showing the five latest logged dates.
 
+## Next project — Installable web app (PWA)
+
+Turn Habit Tracker into a PWA: installable with its own icon and usable
+offline. Still a static site — no server, database, or login is added.
+Steps: publish with GitHub Pages, add a manifest and icons, test installing
+it, add a service worker for offline files, then test offline and after
+updates. Full step-by-step plan is in `Plan.md`.
+
 ## Possible next features
 
 - Add a weekly goal and progress indicator.
