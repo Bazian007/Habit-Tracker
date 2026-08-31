@@ -1,4 +1,4 @@
-const CACHE_NAME = "habit-tracker-v13";
+const CACHE_NAME = "habit-tracker-v14";
 const APP_FILES = [
     "./",
     "./index.html",
@@ -17,6 +17,17 @@ const APP_FILES = [
 
   self.addEventListener("fetch", (event) => {
     event.respondWith(
-      caches.match(event.request).then((response) => response || fetch(event.request))
+      fetch(event.request)
+        .then((response) => {
+          if (event.request.method === "GET") {
+            const copy = response.clone();
+            caches.open(CACHE_NAME).then((cache) => {
+              cache.put(event.request, copy);
+            });
+          }
+
+          return response;
+        })
+        .catch(() => caches.match(event.request))
     );
   });
