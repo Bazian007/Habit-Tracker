@@ -11,22 +11,27 @@
 </head>
 <body>
   <main class="app">
-    <header>
-      <h1>Habit Tracker</h1>
-      <p class="subtitle">Build healthy habits, one day at a time.</p>
-      <p class="quote">“Don’t count the days. Make the days count.” Muhammad Ali</p>
+    <header class="app-header">
+      <div class="header-copy">
+        <h1>Habit Tracker</h1>
+        <p class="subtitle">Build healthy habits, one day at a time.</p>
+        <p class="quote">“Don’t count the days. Make the days count.” Muhammad Ali</p>
+      </div>
       <button type="button" id="theme-toggle">Dark mode</button>
-      <div class="data-controls">
+      <div class="data-controls" aria-label="Your data">
+        <span class="data-controls-label">Your data</span>
         <button type="button" id="export-data">Download backup</button>
         <button type="button" id="import-data">Restore backup</button>
         <input type="file" id="import-file" accept="application/json" hidden>
       </div>
     </header>
-    <div id="stats" class="stats"></div>
     <div class="dashboard">
-      <section id="calendar" class="calendar">
-        <!-- Filled by app.js -->
-      </section>
+      <div class="calendar-column">
+        <div id="stats" class="stats"></div>
+        <section id="calendar" class="calendar">
+          <!-- Filled by app.js -->
+        </section>
+      </div>
     
       <section class="activity-breakdown">
         <h2>Monthly breakdown</h2>
@@ -34,9 +39,8 @@
       </section>
     </div>
 
-    <section class="recent-activity">
-      <h2>Recent logs</h2>
-      <div id="recent-activity"></div>
+    <section id="monthly-goals" class="monthly-goals" aria-labelledby="monthly-goals-title">
+      <!-- Filled by app.js -->
     </section>
 
       <div id="modal" class="modal hidden" aria-hidden="true">
@@ -64,6 +68,7 @@
         </div>
       </div>
   </main>
+  <script src="logic.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

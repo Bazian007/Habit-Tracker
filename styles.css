@@ -1,9 +1,19 @@
 :root {
-    --accent: #1d3557;
-    --accent-green: #1b4332;
-    --wine: #6b1420;
-    --ink: #1a1a1a;
-  }
+  --navy: #1d3557;
+  --wine: #6b1420;
+  --habit-accent: #6b1420;
+  --green: #1b4332;
+  --sky: #74b9e6;
+  --ink: #111827;
+  --muted: #5b6472;
+  --line: #dbe3ec;
+  --surface: #ffffff;
+  --card-shadow: 0 10px 24px rgba(29, 53, 87, 0.1);
+  --card-shadow-hover: 0 16px 32px rgba(29, 53, 87, 0.15);
+  --calendar-shadow: 0 14px 30px rgba(29, 53, 87, 0.14);
+  --accent: var(--navy);
+  --accent-green: var(--green);
+}
   
   * {
     box-sizing: border-box;
@@ -12,47 +22,62 @@
   
   body {
     margin: 0;
+    min-height: 100vh;
     font-family: system-ui, -apple-system, sans-serif;
-    background: #f5f5f5;
+    background: #ffffff;
     color: var(--ink);
   }
-  body.dark {
-    --accent: #6f92bb;
-    --accent-green: #7fa88f;
-    background: #1f2937;
-    color: #f9fafb;
-  }
+body.dark {
+  --accent: #8ab6e5;
+  --accent-green: #9fc8ab;
+  --ink: #f8fafc;
+  --muted: #c3cfdd;
+  --line: #334155;
+  --surface: #111827;
+  --habit-accent: #d87591;
+  --card-shadow: 0 10px 24px rgba(0, 0, 0, 0.22);
+  --card-shadow-hover: 0 16px 32px rgba(0, 0, 0, 0.3);
+  --calendar-shadow: 0 14px 30px rgba(0, 0, 0, 0.28);
+  background: #0f172a;
+  color: var(--ink);
+}
 
-  body.dark .calendar {
-    background: #111827;
-  }
-
-  body.dark .activity-breakdown {
-    background: #111827;
-  }
-
-  body.dark .recent-activity {
-    background: #111827;
-  }
-
-  .app {
-    max-width: 960px;
-    margin: 0 auto;
-    padding: 3rem 1.5rem;
-  }
+.app {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem;
+}
   
-  .dashboard {
-    display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: 1rem;
-    align-items: start;
-  }
+.dashboard {
+  display: grid;
+  grid-template-columns: minmax(0, 2fr) minmax(250px, 1fr);
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.calendar-column {
+  display: grid;
+  gap: 0.8rem;
+}
   
   .dashboard .activity-breakdown {
     margin-top: 0;
   }
   
   @media (max-width: 700px) {
+    .app {
+      padding: 2rem 1rem;
+    }
+
+    .app-header {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+    }
+
+    #theme-toggle {
+      justify-self: start;
+    }
+
     .dashboard {
       grid-template-columns: 1fr;
     }
@@ -60,114 +85,136 @@
     .dashboard .activity-breakdown {
       margin-top: 1rem;
     }
+
+    .goals-grid,
+    .goals-form {
+      grid-template-columns: 1fr;
+    }
+
+    .goals-form-actions {
+      justify-content: flex-start;
+    }
   }
 
-  header h1 {
-    margin: 0 0 0.25rem;
-    font-size: 2.25rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    color: var(--accent);
-  }
+.app-header {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 1rem 2rem;
+  align-items: start;
+  margin-bottom: 1.5rem;
+}
+
+.app-header h1 {
+  margin: 0 0 0.3rem;
+  font-size: clamp(2rem, 4vw, 2.6rem);
+  font-weight: 750;
+  letter-spacing: -0.045em;
+  line-height: 1;
+  color: var(--accent);
+}
 
 
-  .subtitle {
-    margin: 0 0 0.75rem;
-    color: #5c5b5b;
-    font-size: 1.1rem;
-  }
+.subtitle {
+  margin: 0 0 0.8rem;
+  color: var(--muted);
+  font-size: 1.05rem;
+}
 
-  .quote {
-    margin: 0 0 1.5rem;
-    padding-left: 1rem;
-    border-left: 3px solid var(--accent);
-    font-style: italic;
-    color: var(--ink);
-    font-size: 1.1rem;
-  }
+.quote {
+  max-width: 42rem;
+  margin: 0;
+  padding-left: 0.9rem;
+  border-left: 3px solid var(--accent);
+  font-style: italic;
+  color: var(--muted);
+  font-size: 1rem;
+}
+
+#theme-toggle,
+.data-controls button {
+  min-height: 2.5rem;
+  padding: 0.55rem 0.85rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+#theme-toggle:hover,
+.data-controls button:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.data-controls {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-wrap: wrap;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.data-controls-label {
+  margin-right: 0.2rem;
+  color: var(--muted);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
+button:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--sky) 70%, white);
+  outline-offset: 2px;
+}
   
-  #theme-toggle {
-    margin: 0 0 1rem;
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #060607;
-    border-radius: 8px;
-    background: rgb(220, 216, 216);
-    font: inherit;
-    cursor: pointer;
-  }
+.stats {
+  margin: 0;
+  padding: 0.8rem 1rem;
+  border: 1px solid var(--line);
+  border-left: 4px solid var(--accent-green);
+  border-radius: 12px;
+  background: var(--surface);
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--accent-green);
+}
 
-  body.dark #theme-toggle {
-    background: #273449;
-    border-color: #475569;
-    color: #f8fafc;
-  }
+.calendar,
+.activity-breakdown,
+.monthly-goals {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 1.35rem;
+  box-shadow: var(--card-shadow);
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
 
-  .data-controls {
-    display: flex;
-    gap: 0.5rem;
-    flex-wrap: wrap;
-    margin: 0 0 1rem;
-  }
-  
-  .data-controls button {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #060607;
-    border-radius: 8px;
-    background: rgb(220, 216, 216);
-    font: inherit;
-    cursor: pointer;
-  }
+.calendar {
+  box-shadow: var(--calendar-shadow);
+}
 
-  body.dark .data-controls button {
-    background: #273449;
-    border-color: #475569;
-    color: #f8fafc;
-  }
+.calendar:hover,
+.activity-breakdown:hover,
+.monthly-goals:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--card-shadow-hover);
+}
 
-  body.dark .stats {
-    background: #1e293b;
-  }
-
-  body.dark .subtitle {
-    color: #cbd5e1;
-  }
-
-  body.dark .quote {
-    color: #cbd5e1;
-  }
-  body.dark .weekday {
-    color: #94a3b8;
-  }
-  
-  .stats {
-    margin: 0 0 1rem;
-    padding: 0.75rem 1rem;
-    border-radius: 10px;
-    background: color-mix(in srgb, var(--ink) 5%, white);
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--accent-green);
-  }
-  
-  
-  .calendar {
-    background: white;
-    border-radius: 12px;
-    padding: 1.25rem;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  }
-  
-  .activity-breakdown {
-    margin-top: 1rem;
-    background: white;
-    border-radius: 12px;
-    padding: 1.25rem;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-  }
+.activity-breakdown {
+  margin-top: 0;
+}
 
 .activity-breakdown h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1rem;
+  margin: 0 0 0.9rem;
+  font-size: 1.05rem;
+  letter-spacing: -0.015em;
 }
 
 #activity-breakdown {
@@ -180,9 +227,10 @@
   align-items: center;
   gap: 0.75rem;
   padding: 0.65rem 0.75rem;
-  border-radius: 8px;
-  background: #f8fafc;
-  color: #1f2937;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: transparent;
+  color: var(--ink);
 }
 
 .activity-summary-swatch {
@@ -196,56 +244,160 @@
   margin-left: auto;
 }
 
-body.dark .activity-summary {
-  background: #1e293b;
-  color: #f8fafc;
+.monthly-goals {
+  margin-top: 1.25rem;
 }
 
-.recent-activity {
-  margin-top: 1rem;
-  background: white;
-  border-radius: 12px;
-  padding: 1.25rem;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
+.monthly-goals-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
 }
 
-.recent-activity h2 {
-  margin: 0 0 0.75rem;
-  font-size: 1rem;
+.monthly-goals-header h2 {
+  margin: 0;
+  font-size: 1.05rem;
+  letter-spacing: -0.015em;
 }
 
-#recent-activity {
+.monthly-goals-header p {
+  margin: 0.2rem 0 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.goals-edit-btn,
+.goals-cancel-btn {
+  min-height: 2.35rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--surface);
+  color: var(--accent);
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.goals-edit-btn:hover,
+.goals-cancel-btn:hover {
+  background: var(--accent);
+  color: #ffffff;
+}
+
+.goals-grid {
   display: grid;
-  gap: 0.5rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
 }
 
-.recent-activity-item {
+.goal-card {
+  padding: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+}
+
+.goal-card-heading {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 0.5rem 1rem;
-  padding: 0.65rem 0.75rem;
-  border-radius: 8px;
-  background: #f8fafc;
-  color: #1f2937;
+  gap: 0.75rem;
 }
 
-.recent-activity-date {
+.goal-card h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.goal-card-heading strong {
+  color: var(--accent);
+  font-size: 1.1rem;
+}
+
+.goal-card-heading strong span {
+  color: var(--muted);
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
-.recent-activity-labels {
-  color: #475569;
+.goal-progress-track {
+  height: 0.6rem;
+  margin: 0.85rem 0 0.7rem;
+  overflow: hidden;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--ink) 8%, var(--surface));
 }
 
-body.dark .recent-activity-item {
-  background: #1e293b;
-  color: #f8fafc;
+.goal-progress-fill {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--accent);
+  transition: width 0.25s ease;
 }
 
-body.dark .recent-activity-labels {
-  color: #cbd5e1;
+.goal-card-habits .goal-progress-fill {
+  background: var(--habit-accent);
+}
+
+.goal-card-habits .goal-card-heading strong {
+  color: var(--habit-accent);
+}
+
+.goal-message {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.goals-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) auto;
+  align-items: end;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+
+.goals-form label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--muted);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.goals-form input {
+  width: 100%;
+  min-height: 2.35rem;
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  color: var(--ink);
+  font: inherit;
+}
+
+.goals-form-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.goals-save-btn {
+  min-height: 2.35rem;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid var(--accent);
+  border-radius: 999px;
+  background: var(--accent);
+  color: #ffffff;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
   .calendar-header {
@@ -258,29 +410,26 @@ body.dark .recent-activity-labels {
   .calendar-header h2 {
     margin: 0;
     font-size: 1.125rem;
-    font-weight: 600;
+    font-weight: 750;
+    letter-spacing: -0.02em;
   }
   
   .nav-btn {
     width: 36px;
     height: 36px;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
     font-size: 1.25rem;
     line-height: 1;
     cursor: pointer;
-    color: #111;
-  }
-  
-  body.dark .nav-btn {
-    background: #273449;
-    border-color: #475569;
-    color: #f8fafc;
+    color: var(--accent);
+    transition: background 0.15s ease, color 0.15s ease;
   }
 
   .nav-btn:hover {
-    background: #f0f0f0;
+    background: var(--accent);
+    color: #ffffff;
   }
   
   .calendar-grid {
@@ -293,7 +442,7 @@ body.dark .recent-activity-labels {
     text-align: center;
     font-size: 0.95rem;
     font-weight: 600;
-    color: #666;
+    color: var(--muted);
     padding: 0.25rem 0;
   }
   
@@ -325,7 +474,7 @@ body.dark .recent-activity-labels {
   }
 
   .day {
-    border: 1px solid #e5e5e5;
+    border: 1px solid var(--line);
     background: transparent;
     cursor: pointer;
     position: relative;
@@ -336,11 +485,7 @@ body.dark .recent-activity-labels {
   }
   
   .day:hover {
-    background: #f0f0f0;
-  }
-
-  body.dark .day:hover {
-    background: #273449;
+    background: color-mix(in srgb, var(--sky) 16%, var(--surface));
   }
   
   .day.today:hover {
@@ -395,7 +540,9 @@ body.dark .recent-activity-labels {
   
   .modal-panel {
     position: relative;
-    background: white;
+    background: var(--surface);
+    color: var(--ink);
+    border: 1px solid var(--line);
     width: 100%;
     max-width: 480px;
     max-height: calc(100vh - 2rem);
@@ -411,7 +558,7 @@ body.dark .recent-activity-labels {
   
   .modal-date {
     margin: 0 0 1rem;
-    color: #666;
+    color: var(--muted);
     font-size: 0.875rem;
   }
 
@@ -424,9 +571,9 @@ body.dark .recent-activity-labels {
 
   .category-tab {
     padding: 0.65rem;
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    background: white;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface);
     color: var(--ink);
     font: inherit;
     font-weight: 600;
@@ -441,7 +588,7 @@ body.dark .recent-activity-labels {
 
   .category-prompt {
     margin: 0 0 0.75rem;
-    color: #666;
+    color: var(--muted);
     font-size: 0.875rem;
   }
   
@@ -532,9 +679,10 @@ body.dark .recent-activity-labels {
     align-items: center;
     gap: 0.75rem;
     padding: 0.75rem 1rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--line);
     border-radius: 10px;
-    background: white;
+    background: var(--surface);
+    color: var(--ink);
     font-size: 1rem;
     cursor: pointer;
     text-align: left;
@@ -543,7 +691,7 @@ body.dark .recent-activity-labels {
   }
   
   .activity-btn:hover {
-    background: #f8f8f8;
+    background: color-mix(in srgb, var(--sky) 14%, var(--surface));
   }
   
   .activity-btn.selected {
@@ -551,21 +699,12 @@ body.dark .recent-activity-labels {
     background: color-mix(in srgb, var(--activity-color) 12%, white);
   }
 
-  body.dark .modal-panel {
-    background: #111827;
-  }
-
-  body.dark .modal-date,
-  body.dark .category-prompt {
-    color: #cbd5e1;
-  }
-
   body.dark .category-tab,
   body.dark .activity-btn,
   body.dark .close-btn {
-    background: #1e293b;
-    border-color: #475569;
-    color: #f8fafc;
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--ink);
   }
 
   body.dark .category-tab.selected {
@@ -574,7 +713,7 @@ body.dark .recent-activity-labels {
   }
 
   body.dark .activity-btn:hover {
-    background: #273449;
+    background: color-mix(in srgb, var(--sky) 16%, var(--surface));
   }
 
   body.dark .activity-btn.selected {
@@ -608,7 +747,7 @@ body.dark .recent-activity-labels {
 
   .add-custom-btn {
     padding: 0.75rem 1rem;
-    border: 1px dashed #bbb;
+    border: 1px dashed var(--accent);
     border-radius: 10px;
     background: transparent;
     color: var(--accent);
@@ -627,7 +766,7 @@ body.dark .recent-activity-labels {
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--line);
     border-radius: 10px;
   }
 
@@ -635,8 +774,10 @@ body.dark .recent-activity-labels {
     flex: 1;
     min-width: 0;
     padding: 0.5rem 0.65rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--line);
     border-radius: 8px;
+    background: var(--surface);
+    color: var(--ink);
     font: inherit;
   }
 
@@ -644,7 +785,7 @@ body.dark .recent-activity-labels {
     width: 2.5rem;
     height: 2.5rem;
     padding: 0;
-    border: 1px solid #ddd;
+    border: 1px solid var(--line);
     border-radius: 8px;
     cursor: pointer;
   }
@@ -666,28 +807,23 @@ body.dark .recent-activity-labels {
 
   .custom-cancel-btn {
     padding: 0.5rem 0.75rem;
-    border: 1px solid #ddd;
+    border: 1px solid var(--line);
     border-radius: 8px;
-    background: white;
+    background: var(--surface);
     color: var(--ink);
     font: inherit;
     cursor: pointer;
   }
 
   body.dark .add-custom-btn {
-    border-color: #475569;
     color: var(--accent);
-  }
-
-  body.dark .custom-form {
-    border-color: #475569;
   }
 
   body.dark .custom-label-input,
   body.dark .custom-cancel-btn {
-    background: #1e293b;
-    border-color: #475569;
-    color: #f8fafc;
+    background: var(--surface);
+    border-color: var(--line);
+    color: var(--ink);
   }
 
   .clear-btn,
@@ -711,7 +847,7 @@ body.dark .recent-activity-labels {
   }
   
   .close-btn {
-    border: 1px solid #ddd;
-    background: white;
-    color: #111;
+    border: 1px solid var(--accent);
+    background: var(--surface);
+    color: var(--accent);
   }

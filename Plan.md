@@ -26,6 +26,15 @@ in a browser and currently has no backend.
 Each date can have multiple activity IDs. The internal name remains `workouts`,
 while the visible interface calls them activities or habits.
 
+Monthly targets are stored separately in browser `localStorage` as:
+
+```js
+{
+  activities: 30,
+  habits: 20
+}
+```
+
 ## Security
 
 `index.html` has a Content Security Policy (CSP) meta tag. It restricts scripts
@@ -45,7 +54,11 @@ created dynamically in `app.js`.
 - [x] Habit Tracker header, subtitle, and quote.
 - [x] Responsive dashboard layout.
 - [x] Monthly Breakdown with colour-coded count rows.
-- [x] Recent Logs list showing the five most recent logged dates.
+- [x] Removed the redundant Recent Logs card.
+- [x] Added a Monthly Goals card with separate activity and habit targets.
+- [x] Added editable targets, progress bars, and milestone messages at 25%,
+  50%, 75%, and 100%.
+- [x] Styled activity progress in navy and habit progress in deep wine.
 
 ## Completed — Installable web app (PWA)
 
@@ -108,12 +121,36 @@ Allow users to manually back up or move their logged history without a server.
 Backup and restore are manual. They do not automatically sync data between the
 Safari browser version and the Safari Dock web app.
 
+## Completed — Automated tests for core logic
+
+### Purpose
+
+Protect the app's trickiest logic (streak calculations) from breaking silently,
+by testing it automatically instead of only checking it by hand in the browser.
+
+- [x] Installed Vitest and added an `npm test` script.
+- [x] Moved `toDateKey`, `slugify`, `calculateStreak`, `calculateBestStreak`,
+  and `getGoalProgress`
+  into a shared `logic.js` file, usable by both the browser and Vitest.
+- [x] Refactored `calculateStreak` and `calculateBestStreak` to accept
+  `workouts` (and, for `calculateStreak`, "today") as arguments instead of
+  reading global state, so tests can supply fake data.
+- [x] Wrote 12 tests in `logic.test.js` covering normal cases and edge cases:
+  empty logs, a broken streak, today not yet logged, and a shorter past streak.
+- [x] Added tests for the halfway and completed-goal milestone messages.
+
+### Limitation
+
+Only the five pure functions above are tested. `getStreakDates()` in `app.js`
+still reads global state directly and isn't covered yet.
+
 ## Next options
 
-1. Weekly goal and progress indicator.
-2. Notes for a logged day.
-3. Custom activities.
-4. Optional backend for multi-device sync.
+1. Add a one-time celebration when an activity or habit goal is completed.
+2. Add an optional focused challenge, such as “Run 8 times.”
+3. Notes for a logged day.
+4. Test and refactor `getStreakDates()` the same way as the other streak
+   functions.
 
 ## Known small cleanups
 
@@ -138,3 +175,9 @@ Safari browser version and the Safari Dock web app.
 - 2026-08-26: Completed the PWA: GitHub Pages, manifest and icons,
   installation, offline caching, and cache-version updates.
 - 2026-08-26: Added and tested manual JSON export/import for saved history.
+- 2026-08-20: Added Vitest, split `toDateKey`/`slugify`/`calculateStreak`/
+  `calculateBestStreak` into `logic.js`, and wrote 10 passing tests covering
+  them.
+- 2026-08-31: Replaced Recent Logs with Monthly Goals. Added editable activity
+  and habit targets, milestone progress messages, deep-wine habit styling, and
+  two goal-progress tests (12 passing tests total).

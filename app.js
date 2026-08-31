@@ -38,6 +38,8 @@ const ENCOURAGEMENTS = [
 const STORAGE_KEY = "workout-tracker-v1";
 const THEME_STORAGE_KEY = "habit-tracker-theme";
 const CUSTOM_ITEMS_KEY = "habit-tracker-custom-items";
+const MONTHLY_GOALS_KEY = "habit-tracker-monthly-goals";
+const DEFAULT_MONTHLY_GOALS = { activities: 30, habits: 20 };
 
 const now = new Date();
 let viewYear = now.getFullYear();
@@ -48,6 +50,8 @@ let customFormOpen = false;
 let encouragementTimer = null;
 let workouts = loadWorkouts();
 let customItems = loadCustomItems();
+let monthlyGoals = loadMonthlyGoals();
+let goalsEditorOpen = false;
 
 function loadWorkouts() {
   try {
@@ -73,17 +77,31 @@ function saveCustomItems(data) {
   localStorage.setItem(CUSTOM_ITEMS_KEY, JSON.stringify(data));
 }
 
+function validGoal(value, fallback) {
+  const goal = Number(value);
+  return Number.isInteger(goal) && goal > 0 && goal <= 999 ? goal : fallback;
+}
+
+function loadMonthlyGoals() {
+  try {
+    const savedGoals = JSON.parse(localStorage.getItem(MONTHLY_GOALS_KEY) || "{}");
+    return {
+      activities: validGoal(savedGoals.activities, DEFAULT_MONTHLY_GOALS.activities),
+      habits: validGoal(savedGoals.habits, DEFAULT_MONTHLY_GOALS.habits),
+    };
+  } catch {
+    return { ...DEFAULT_MONTHLY_GOALS };
+  }
+}
+
+function saveMonthlyGoals(goals) {
+  localStorage.setItem(MONTHLY_GOALS_KEY, JSON.stringify(goals));
+}
+
 function getAllItems() {
   return ACTIVITIES.concat(customItems);
 }
 
-function slugify(text) {
-  return text
-    .trim()
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 function generateUniqueId(label) {
   const base = slugify(label) || "item";
@@ -150,11 +168,6 @@ function importWorkouts(file) {
   reader.readAsText(file);
 }
 
-function toDateKey(year, month, day) {
-  const m = String(month + 1).padStart(2, "0");
-  const d = String(day).padStart(2, "0");
-  return `${year}-${m}-${d}`;
-}
 
 function getActivity(id) {
   return getAllItems().find((activity) => activity.id === id);
@@ -359,54 +372,7 @@ function clearWorkout() {
   renderCalendar(viewYear, viewMonth);
 }
 
-function calculateStreak() {
-  const today = new Date();
-  const hasToday = workouts[toDateKey(today.getFullYear(), today.getMonth(), today.getDate())]?.length > 0;
 
-  const cursor = new Date(today);
-  if (!hasToday) {
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  let streak = 0;
-  while (true) {
-    const key = toDateKey(cursor.getFullYear(), cursor.getMonth(), cursor.getDate());
-    const logged = workouts[key]?.length > 0;
-    if (!logged) break;
-    streak++;
-    cursor.setDate(cursor.getDate() - 1);
-  }
-
-  return streak;
-}
-function calculateBestStreak() {
-  const dates = Object.keys(workouts).sort();
-  let currentStreak = 0;
-  let bestStreak = 0;
-  let previousDate = null;
-  for (const date of dates) {
-    const currentDate = new Date(`${date}T00:00:00`);
-    if (previousDate === null) {
-      currentStreak = 1;
-    } else {
-      const dayBefore = new Date(currentDate);
-      dayBefore.setDate(dayBefore.getDate() - 1);
-      if (previousDate.toDateString() === dayBefore.toDateString()) {
-        currentStreak++;
-      } else {
-        currentStreak = 1;
-      }
-      
-    }
-    if (currentStreak > bestStreak) {
-      bestStreak = currentStreak;
-    }
-
-    previousDate = currentDate;
-  }
-  return bestStreak;
-  
-}
 function getStreakDates() {
   const today = new Date();
   const hasToday = workouts[toDateKey(today.getFullYear(), today.getMonth(), today.getDate())]?.length > 0;
@@ -438,27 +404,19 @@ function updateStats(year, month) {
     }
   }
 
-  let text = count === 0
-    ? "No activities yet. Tap a day to log one."
-    : `${count} activities this month`;
+  const stats = [
+    count === 0 ? "No activities this month" : `${count} activities this month`
+  ];
+  const streak = calculateStreak(workouts);
+  const bestStreak = calculateBestStreak(workouts);
 
-  const today = new Date();
-  const todayKey = toDateKey(today.getFullYear(), today.getMonth(), today.getDate());
-  const loggedToday = workouts[todayKey] && workouts[todayKey].length > 0;
-
-  if (!loggedToday) {
-    text += " Let's go! Log today's activities! 💪";
-  }
-
-  const streak = calculateStreak();
-  const bestStreak = calculateBestStreak();
   if (streak > 0) {
-    text += ` 🔥 ${streak}-day streak`;
+    stats.push(`${streak}-day streak`);
   }
   if (bestStreak > 0) {
-    text += ` · Best: ${bestStreak} days`;
+    stats.push(`Best: ${bestStreak} days`);
   }
-  document.getElementById("stats").textContent = text;
+  document.getElementById("stats").textContent = stats.join(" · ");
 }
 
 function updateActivityBreakdown(year, month) {
@@ -495,34 +453,108 @@ function updateActivityBreakdown(year, month) {
   });
 }
 
-function updateRecentActivity() {
-  const container = document.getElementById("recent-activity");
-  const recentDates = Object.keys(workouts)
-    .filter((dateKey) => workouts[dateKey]?.length > 0)
-    .sort((firstDate, secondDate) => secondDate.localeCompare(firstDate))
-    .slice(0, 5);
+function getMonthlyCategoryCounts(year, month) {
+  const counts = { activity: 0, habit: 0 };
 
-  if (recentDates.length === 0) {
-    container.textContent = "Nothing logged yet.";
-    return;
+  for (const dateKey in workouts) {
+    const [workoutYear, workoutMonth] = dateKey.split("-").map(Number);
+    if (workoutYear !== year || workoutMonth !== month + 1) continue;
+
+    for (const itemId of workouts[dateKey]) {
+      const item = getActivity(itemId);
+      if (item?.category === "activity") counts.activity += 1;
+      if (item?.category === "habit") counts.habit += 1;
+    }
   }
 
-  container.innerHTML = recentDates.map((dateKey) => `
-      <div class="recent-activity-item" data-recent-date="${dateKey}">
-        <time class="recent-activity-date" datetime="${dateKey}">${formatDisplayDate(dateKey)}</time>
-        <span class="recent-activity-labels"></span>
+  return counts;
+}
+
+function renderGoalCard(label, kind, count, target) {
+  const progress = getGoalProgress(count, target);
+
+  return `
+    <article class="goal-card goal-card-${kind}">
+      <div class="goal-card-heading">
+        <h3>${label}</h3>
+        <strong>${progress.completed} <span>/ ${progress.goal}</span></strong>
       </div>
-    `).join("");
+      <div
+        class="goal-progress-track"
+        role="progressbar"
+        aria-label="${label} progress"
+        aria-valuemin="0"
+        aria-valuemax="${progress.goal}"
+        aria-valuenow="${progress.completed}"
+      >
+        <span class="goal-progress-fill" style="width: ${progress.percentage}%"></span>
+      </div>
+      <p class="goal-message">${progress.message}</p>
+    </article>
+  `;
+}
 
-  container.querySelectorAll(".recent-activity-item").forEach((row) => {
-    const dateKey = row.dataset.recentDate;
-    const labels = workouts[dateKey]
-      .map(getActivity)
-      .filter(Boolean)
-      .map((activity) => activity.label)
-      .join(", ");
+function renderMonthlyGoals(year, month) {
+  const container = document.getElementById("monthly-goals");
+  const counts = getMonthlyCategoryCounts(year, month);
+  const editor = goalsEditorOpen
+    ? `
+      <form id="goals-form" class="goals-form">
+        <label>
+          Activity target
+          <input type="number" name="activities" min="1" max="999" required value="${monthlyGoals.activities}">
+        </label>
+        <label>
+          Habit target
+          <input type="number" name="habits" min="1" max="999" required value="${monthlyGoals.habits}">
+        </label>
+        <div class="goals-form-actions">
+          <button type="submit" class="goals-save-btn">Save goals</button>
+          <button type="button" id="cancel-goals" class="goals-cancel-btn">Cancel</button>
+        </div>
+      </form>
+    `
+    : "";
 
-    row.querySelector(".recent-activity-labels").textContent = labels;
+  container.innerHTML = `
+    <div class="monthly-goals-header">
+      <div>
+        <h2 id="monthly-goals-title">Monthly goals</h2>
+        <p>${MONTH_NAMES[month]} ${year}</p>
+      </div>
+      <button type="button" id="edit-goals" class="goals-edit-btn">Edit goals</button>
+    </div>
+    <div class="goals-grid">
+      ${renderGoalCard("Activities", "activities", counts.activity, monthlyGoals.activities)}
+      ${renderGoalCard("Habits", "habits", counts.habit, monthlyGoals.habits)}
+    </div>
+    ${editor}
+  `;
+
+  document.getElementById("edit-goals").addEventListener("click", () => {
+    goalsEditorOpen = true;
+    renderMonthlyGoals(viewYear, viewMonth);
+  });
+
+  if (!goalsEditorOpen) return;
+
+  document.getElementById("cancel-goals").addEventListener("click", () => {
+    goalsEditorOpen = false;
+    renderMonthlyGoals(viewYear, viewMonth);
+  });
+
+  document.getElementById("goals-form").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+
+    monthlyGoals = {
+      activities: validGoal(form.elements.activities.value, DEFAULT_MONTHLY_GOALS.activities),
+      habits: validGoal(form.elements.habits.value, DEFAULT_MONTHLY_GOALS.habits),
+    };
+    saveMonthlyGoals(monthlyGoals);
+    goalsEditorOpen = false;
+    renderMonthlyGoals(viewYear, viewMonth);
   });
 }
 
@@ -535,7 +567,7 @@ function renderCalendar(year, month) {
   const startOffset = (firstDay.getDay() + 6) % 7;
     updateStats(year, month);
     updateActivityBreakdown(year, month);
-    updateRecentActivity();
+    renderMonthlyGoals(year, month);
   let html = `
     <div class="calendar-header">
       <button type="button" class="nav-btn" id="prev-month" aria-label="Previous month">‹</button>
