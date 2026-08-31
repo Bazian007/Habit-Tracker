@@ -22,15 +22,32 @@ const ACTIVITIES = [
   { id: "gratitudes", label: "Write 3 gratitudes", color: "#D946EF", category: "habit" },
 ];
 
+const ENCOURAGEMENTS = [
+  "Great job🔥 keep going!",
+  "Small steps count.",
+  "You are building momentum.",
+  "One day at a time.",
+  "Progress, not perfection.",
+  "Consistency wins.",
+  "Your future self will thank you.",
+  "You showed up today.",
+  "Keep the streak alive.",
+  "Well done!",
+];
+
 const STORAGE_KEY = "workout-tracker-v1";
 const THEME_STORAGE_KEY = "habit-tracker-theme";
+const CUSTOM_ITEMS_KEY = "habit-tracker-custom-items";
 
 const now = new Date();
 let viewYear = now.getFullYear();
 let viewMonth = now.getMonth();
 let selectedDate = null;
 let selectedCategory = null;
+let customFormOpen = false;
+let encouragementTimer = null;
 let workouts = loadWorkouts();
+let customItems = loadCustomItems();
 
 function loadWorkouts() {
   try {
@@ -42,6 +59,66 @@ function loadWorkouts() {
 
 function saveWorkouts(data) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function loadCustomItems() {
+  try {
+    return JSON.parse(localStorage.getItem(CUSTOM_ITEMS_KEY) || "[]");
+  } catch {
+    return [];
+  }
+}
+
+function saveCustomItems(data) {
+  localStorage.setItem(CUSTOM_ITEMS_KEY, JSON.stringify(data));
+}
+
+function getAllItems() {
+  return ACTIVITIES.concat(customItems);
+}
+
+function slugify(text) {
+  return text
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function generateUniqueId(label) {
+  const base = slugify(label) || "item";
+  const existingIds = getAllItems().map((item) => item.id);
+  let id = base;
+  let counter = 2;
+
+  while (existingIds.includes(id)) {
+    id = `${base}-${counter}`;
+    counter++;
+  }
+
+  return id;
+}
+
+function addCustomItem(label, color) {
+  const trimmedLabel = label.trim();
+  if (!trimmedLabel || !selectedCategory) return;
+
+  customItems.push({
+    id: generateUniqueId(trimmedLabel),
+    label: trimmedLabel,
+    color,
+    category: selectedCategory,
+    custom: true,
+  });
+
+  saveCustomItems(customItems);
+}
+
+function deleteCustomItem(id) {
+  customItems = customItems.filter((item) => item.id !== id);
+  saveCustomItems(customItems);
+  renderActivityOptions();
+  renderCalendar(viewYear, viewMonth);
 }
 
 function exportWorkouts() {
@@ -80,7 +157,7 @@ function toDateKey(year, month, day) {
 }
 
 function getActivity(id) {
-  return ACTIVITIES.find((activity) => activity.id === id);
+  return getAllItems().find((activity) => activity.id === id);
 }
 
 function formatDisplayDate(dateKey) {
@@ -137,23 +214,79 @@ function renderActivityOptions() {
   } else {
     const categoryName = selectedCategory === "activity" ? "activities" : "habits";
     prompt.textContent = `Choose the ${categoryName} you completed.`;
-    options.innerHTML = ACTIVITIES
-      .filter((activity) => activity.category === selectedCategory)
-      .map((activity) => `
+
+    const itemsInCategory = getAllItems().filter((item) => item.category === selectedCategory);
+
+    const itemsHtml = itemsInCategory.map((item) => `
     <button
       type="button"
-      class="activity-btn${loggedActivities.includes(activity.id) ? " selected" : ""}"
-      data-activity="${activity.id}"
-      style="--activity-color: ${activity.color}"
+      class="activity-btn${loggedActivities.includes(item.id) ? " selected" : ""}"
+      data-activity="${item.id}"
+      style="--activity-color: ${item.color}"
     >
       <span class="activity-swatch"></span>
-      ${activity.label}
+      <span class="activity-label"></span>
+      ${item.custom ? `<span class="delete-custom" data-delete-id="${item.id}" title="Delete">×</span>` : ""}
     </button>
   `).join("");
 
+    const formHtml = customFormOpen
+      ? `
+    <div class="custom-form">
+      <input type="text" id="custom-label" class="custom-label-input" placeholder="Name" maxlength="40">
+      <input type="color" id="custom-color" class="custom-color-input" value="#3B82F6">
+      <div class="custom-form-actions">
+        <button type="button" id="custom-add-confirm" class="custom-add-btn">Add</button>
+        <button type="button" id="custom-add-cancel" class="custom-cancel-btn">Cancel</button>
+      </div>
+    </div>
+  `
+      : `<button type="button" id="add-custom-btn" class="add-custom-btn">+ Add custom</button>`;
+
+    options.innerHTML = itemsHtml + formHtml;
+
+    // Labels are set here, not in the HTML above, because a custom label is
+    // typed by the user — this keeps it as plain text, not markup.
     options.querySelectorAll(".activity-btn").forEach((btn) => {
-      btn.addEventListener("click", () => toggleActivity(btn.dataset.activity));
+      const item = itemsInCategory.find((entry) => entry.id === btn.dataset.activity);
+      btn.querySelector(".activity-label").textContent = item.label;
     });
+
+    options.querySelectorAll(".activity-btn").forEach((btn) => {
+      btn.addEventListener("click", (event) => {
+        if (event.target.closest(".delete-custom")) return;
+        toggleActivity(btn.dataset.activity);
+      });
+    });
+
+    options.querySelectorAll(".delete-custom").forEach((btn) => {
+      btn.addEventListener("click", (event) => {
+        event.stopPropagation();
+        if (confirm("Delete this custom item?")) {
+          deleteCustomItem(btn.dataset.deleteId);
+        }
+      });
+    });
+
+    if (customFormOpen) {
+      document.getElementById("custom-add-confirm").addEventListener("click", () => {
+        const label = document.getElementById("custom-label").value;
+        const color = document.getElementById("custom-color").value;
+        if (!label.trim()) return;
+        addCustomItem(label, color);
+        customFormOpen = false;
+        renderActivityOptions();
+      });
+      document.getElementById("custom-add-cancel").addEventListener("click", () => {
+        customFormOpen = false;
+        renderActivityOptions();
+      });
+    } else {
+      document.getElementById("add-custom-btn").addEventListener("click", () => {
+        customFormOpen = true;
+        renderActivityOptions();
+      });
+    }
   }
 
   if (loggedActivities.length > 0) {
@@ -167,16 +300,43 @@ function renderActivityOptions() {
 function closeModal() {
   selectedDate = null;
   selectedCategory = null;
+  customFormOpen = false;
+  hideEncouragement();
   const modal = document.getElementById("modal");
   modal.classList.add("hidden");
   modal.setAttribute("aria-hidden", "true");
 }
+
+function showEncouragement(activityId) {
+  const activity = getActivity(activityId);
+  const randomIndex = Math.floor(Math.random() * ENCOURAGEMENTS.length);
+  const modal = document.getElementById("encouragement-modal");
+  const title = document.getElementById("encouragement-title");
+  const message = document.getElementById("encouragement");
+
+  clearTimeout(encouragementTimer);
+  title.textContent = `${activity.label} logged!`;
+  message.textContent = ENCOURAGEMENTS[randomIndex];
+  modal.classList.remove("hidden");
+  modal.setAttribute("aria-hidden", "false");
+
+  encouragementTimer = setTimeout(hideEncouragement, 3000);
+}
+
+function hideEncouragement() {
+  clearTimeout(encouragementTimer);
+  const modal = document.getElementById("encouragement-modal");
+  modal.classList.add("hidden");
+  modal.setAttribute("aria-hidden", "true");
+}
+
 function toggleActivity(activityId) {
   const current = workouts[selectedDate] || [];
   const index = current.indexOf(activityId);
 
   if (index === -1) {
     current.push(activityId);
+    showEncouragement(activityId);
   } else {
     current.splice(index, 1);
   }
@@ -313,7 +473,7 @@ function updateActivityBreakdown(year, month) {
     }
   }
 
-  const loggedActivities = ACTIVITIES.filter((activity) => counts[activity.id]);
+  const loggedActivities = getAllItems().filter((activity) => counts[activity.id]);
   const container = document.getElementById("activity-breakdown");
 
   if (loggedActivities.length === 0) {
@@ -322,12 +482,17 @@ function updateActivityBreakdown(year, month) {
   }
 
   container.innerHTML = loggedActivities.map((activity) => `
-    <div class="activity-summary">
+    <div class="activity-summary" data-summary-id="${activity.id}">
       <span class="activity-summary-swatch" style="background: ${activity.color}"></span>
-      <span>${activity.label}</span>
+      <span class="activity-summary-label"></span>
       <strong class="activity-summary-count">${counts[activity.id]}</strong>
     </div>
   `).join("");
+
+  container.querySelectorAll(".activity-summary").forEach((row) => {
+    const activity = getActivity(row.dataset.summaryId);
+    row.querySelector(".activity-summary-label").textContent = activity.label;
+  });
 }
 
 function updateRecentActivity() {
@@ -342,20 +507,23 @@ function updateRecentActivity() {
     return;
   }
 
-  container.innerHTML = recentDates.map((dateKey) => {
+  container.innerHTML = recentDates.map((dateKey) => `
+      <div class="recent-activity-item" data-recent-date="${dateKey}">
+        <time class="recent-activity-date" datetime="${dateKey}">${formatDisplayDate(dateKey)}</time>
+        <span class="recent-activity-labels"></span>
+      </div>
+    `).join("");
+
+  container.querySelectorAll(".recent-activity-item").forEach((row) => {
+    const dateKey = row.dataset.recentDate;
     const labels = workouts[dateKey]
       .map(getActivity)
       .filter(Boolean)
       .map((activity) => activity.label)
       .join(", ");
 
-    return `
-      <div class="recent-activity-item">
-        <time class="recent-activity-date" datetime="${dateKey}">${formatDisplayDate(dateKey)}</time>
-        <span class="recent-activity-labels">${labels}</span>
-      </div>
-    `;
-  }).join("");
+    row.querySelector(".recent-activity-labels").textContent = labels;
+  });
 }
 
 function renderCalendar(year, month) {
@@ -426,11 +594,13 @@ function renderCalendar(year, month) {
 }
 
 document.getElementById("modal-backdrop").addEventListener("click", closeModal);
+document.getElementById("encouragement-backdrop").addEventListener("click", hideEncouragement);
 document.getElementById("close-modal").addEventListener("click", closeModal);
 document.getElementById("clear-workout").addEventListener("click", clearWorkout);
 document.querySelectorAll(".category-tab").forEach((button) => {
   button.addEventListener("click", () => {
     selectedCategory = button.dataset.category;
+    customFormOpen = false;
     renderActivityOptions();
   });
 });
