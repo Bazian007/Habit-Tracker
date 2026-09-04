@@ -197,6 +197,13 @@ function changeMonth(delta) {
   renderCalendar(viewYear, viewMonth);
 }
 
+function goToToday() {
+  const today = new Date();
+  viewYear = today.getFullYear();
+  viewMonth = today.getMonth();
+  renderCalendar(viewYear, viewMonth);
+}
+
 function openModal(dateKey) {
   selectedDate = dateKey;
   selectedCategory = null;
@@ -570,7 +577,10 @@ function renderCalendar(year, month) {
     renderMonthlyGoals(year, month);
   let html = `
     <div class="calendar-header">
-      <button type="button" class="nav-btn" id="prev-month" aria-label="Previous month">‹</button>
+      <div class="calendar-actions">
+        <button type="button" class="nav-btn" id="prev-month" aria-label="Previous month">‹</button>
+        <button type="button" class="today-btn" id="today" aria-label="Go to the current month">Today</button>
+      </div>
       <h2>${MONTH_NAMES[month]} ${year}</h2>
       <button type="button" class="nav-btn" id="next-month" aria-label="Next month">›</button>
     </div>
@@ -618,6 +628,7 @@ function renderCalendar(year, month) {
   container.innerHTML = html;
 
   document.getElementById("prev-month").addEventListener("click", () => changeMonth(-1));
+  document.getElementById("today").addEventListener("click", goToToday);
   document.getElementById("next-month").addEventListener("click", () => changeMonth(1));
 
   container.querySelectorAll(".day").forEach((dayBtn) => {
